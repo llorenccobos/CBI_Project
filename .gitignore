@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+# generated data (re-created by `python main.py setup`)
+data/flood.db*
+data/raw/openmeteo/
+data/raw/tmb/
+models/artifacts/
+catboost_info/
+.pytest_cache/
+.DS_Store
