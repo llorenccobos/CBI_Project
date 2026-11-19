@@ -155,7 +155,11 @@ def forecast(issue_time=None) -> dict:
     if live:
         fc_override, fc_issued = _live_forecast_matrix(store, t0)
         fc_source = "live-forecast" if fc_override is not None else "no-live-forecast (archived/persistence proxy)"
-    weather_ok = fc_override is not None or not live
+    coverage_h = LMAX
+    if fc_override is not None:
+        first = next(iter(fc_override.values()))[0]
+        coverage_h = int(np.sum(~np.isnan(first)))
+    weather_ok = (fc_override is not None and coverage_h >= 24) or not live
     base_cache = {sid: store.base_features(sid) for sid in store.sensors.index}
     sensors = list(store.sensors.index)
     per_h = {}
@@ -221,7 +225,7 @@ def forecast(issue_time=None) -> dict:
     return {
         "issued_at": t0.isoformat(), "mode": "live" if live else "replay", "model_version": bundle.version,
         "weather_forecast": {"source": fc_source, "issued_at": fc_issued.isoformat() if fc_issued is not None else None,
-                             "ok": weather_ok},
+                             "ok": weather_ok, "coverage_h": coverage_h if fc_override is not None or not live else 0},
         "alert_level": alert, "horizons": bundle.horizons, "sensors": results,
         "synthetic_sensors": True,
     }

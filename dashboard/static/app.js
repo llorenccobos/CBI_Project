@@ -550,8 +550,11 @@ async function loadForecast() {
     pill.className = "pill " + (state.fc.mode === "live" ? "pill-live" : "pill-replay");
     state.steps = [0, ...state.fc.horizons];
     buildTicks();
-    if (state.fc.mode === "live" && !state.fc.weather_forecast.ok) {
-      toast("No recent live weather forecast run is available: future rainfall inputs are degraded. Forecast confidence is reduced accordingly.", 9000);
+    const wf = state.fc.weather_forecast;
+    if (state.fc.mode === "live" && !wf.ok) {
+      toast(wf.coverage_h > 0
+        ? `The latest weather forecast run only covers the next ${wf.coverage_h} h: rainfall inputs beyond that are missing and forecast confidence is reduced.`
+        : "No recent live weather forecast run is available: future rainfall inputs are degraded. Forecast confidence is reduced accordingly.", 9000);
     }
     await loadWeather();
     render();

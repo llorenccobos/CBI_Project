@@ -45,9 +45,14 @@ def export_seed() -> None:
 def update_history(start: date | None = None) -> dict:
     """Fetch (cached) history + previous runs from Open-Meteo and upsert them."""
     db.init_db()
-    start = start or date.fromisoformat(settings()["weather"]["history_start"])
-    end = _utcnow().date()
     result = {}
+    if db.read_sql("SELECT COUNT(*) n FROM weather_hourly").n.iloc[0] == 0:
+        result["seed_rows"] = load_seed()       # bundled snapshot: avoids re-downloading years of data
+    if start is None:
+        last = db.read_sql("SELECT MAX(ts) t FROM weather_hourly WHERE precipitation IS NOT NULL").t.iloc[0]
+        start = (pd.Timestamp(last).date() - timedelta(days=3)) if last is not None else \
+            date.fromisoformat(settings()["weather"]["history_start"])
+    end = _utcnow().date()
     hist = None
     try:
         hist = om.fetch_history(start, end)
@@ -59,9 +64,15 @@ def update_history(start: date | None = None) -> dict:
     except SourceUnavailable as exc:
         log.warning("history fetch incomplete: %s", exc)
         db.set_status("open-meteo:history", "degraded", str(exc), success=False)
-        if db.read_sql("SELECT COUNT(*) n FROM weather_hourly").n.iloc[0] == 0:
-            result["seed_rows"] = load_seed()
     if hist is not None and len(hist):
+        # The historical-forecast endpoint also returns the rest of today from the latest
+        # model run: hours after "now" are forecasts, never observations.
+        now = pd.Timestamp(_utcnow()).floor("h")
+        future = hist[hist.ts > now].dropna(subset=["precipitation"])
+        hist = hist[hist.ts <= now]
+        if len(future):
+            fut = future.assign(issued_at=now, source="open-meteo:historical-forecast(latest run)")
+            db.upsert_df(db.weather_forecast, fut)
         try:
             prev = om.fetch_previous_runs(start, end)
             hist = hist.merge(prev, on=["cell_id", "ts"], how="left")

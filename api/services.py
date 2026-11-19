@@ -75,7 +75,7 @@ def status() -> dict:
                           "created": b.meta.get("created")}
         except Exception as exc:  # noqa: BLE001
             model_meta = {"version": model_v, "error": str(exc)}
-    now = pd.Timestamp.utcnow().tz_localize(None)
+    now = pd.Timestamp.now("UTC").tz_localize(None)
     return {
         "server_time_utc": now.isoformat(),
         "sensor_data": {"last_observation": last_obs.isoformat() if last_obs is not None else None,

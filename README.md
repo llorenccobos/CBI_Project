@@ -104,6 +104,7 @@ data and ML logic stays in Python. There is no Node build step; front-end librar
 | [Meteocat XEMA](https://apidocs.meteo.cat) | measured station data (30-min) | 3 stations in Barcelona | Optional (free key, low monthly quota). Best *observed* rainfall |
 | [AEMET OpenData](https://opendata.aemet.es) | station observations, municipal forecasts | 2 stations | Optional (free key). Only last 24 h of hourly observations |
 | [OpenStreetMap](https://www.openstreetmap.org) via Overpass | TMB metro route relations (track geometry + stations), 105 TMB bus routes, 5 000+ stops, street axes | very high | **Used** (ODbL). Public Overpass servers are often overloaded; responses are cached in `data/raw/osm` and committed |
+| [OpenFreeMap](https://openfreemap.org) | vector basemap (light / dark) | – | **Used** (free, no key; OpenMapTiles schema, © OpenStreetMap contributors) |
 | [TMB Developer](https://developer.tmb.cat) | official GTFS, iBus/iMetro arrival predictions | official | Optional (free key). No public real-time vehicle positions |
 | Water-level sensors | – | – | **No public data found** (BCASA sewer levels and TMB pumping-well telemetry are not open). Synthetic sensors are used until TMB provides data |
 | Drainage network capacity | – | – | Not public → not used (the model does not need it; it can be added as a static feature) |

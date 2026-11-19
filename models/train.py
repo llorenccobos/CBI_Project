@@ -171,7 +171,7 @@ def train(store: FeatureStore | None = None, horizons: list[int] | None = None) 
             log.info("h=%2d %s trained (n=%d) conformal=%s %s", h, target, len(Xtr), offs,
                      entry.get("alarm_info", ""))
     meta = {
-        "version": version, "created": pd.Timestamp.utcnow().isoformat(), "quantiles": taus,
+        "version": version, "created": pd.Timestamp.now("UTC").isoformat(), "quantiles": taus,
         "horizons": horizons, "features": ALL_FEATURES, "sensor_stats": stats, "splits": splits,
         "data": {"first_ts": str(store.index[0]), "last_ts": str(store.index[-1]),
                  "sensors": list(store.sensors.index), "synthetic_sensors": True},
