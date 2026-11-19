@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="120" height="40" role="img" aria-label="Logo placeholder">
+  <!-- Placeholder logo. Replace this file (or set branding.logo_path in config/settings.yaml). -->
+  <rect x="1" y="1" width="38" height="38" rx="8" fill="#D50032"/>
+  <path d="M20 8 C 14 17, 11 21, 11 25 a 9 9 0 0 0 18 0 C 29 21, 26 17, 20 8 Z" fill="#fff"/>
+  <path d="M14 27 h12" stroke="#D50032" stroke-width="2.4" stroke-linecap="round"/>
+  <text x="46" y="18" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">YOUR</text>
+  <text x="46" y="32" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">LOGO</text>
+</svg>

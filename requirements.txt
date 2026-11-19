@@ -1,0 +1,21 @@
+# Python >= 3.10
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scikit-learn>=1.4
+lightgbm>=4.3
+xgboost>=2.0          # model comparison only
+catboost>=1.2         # model comparison only
+shapely>=2.0
+pyproj>=3.6
+SQLAlchemy>=2.0
+requests>=2.31
+PyYAML>=6.0
+python-dotenv>=1.0
+fastapi>=0.110
+uvicorn[standard]>=0.27
+APScheduler>=3.10
+joblib>=1.3
+# tests
+pytest>=8.0
+httpx>=0.27

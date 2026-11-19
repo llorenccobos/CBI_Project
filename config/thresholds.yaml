@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------------------
+# Water-level thresholds (cm above the reference level of each sensor).
+#
+#  green  : level <  elevated
+#  yellow : elevated <= level < dangerous
+#  orange : dangerous <= level < critical
+#  red    : level >= critical      <- operational safety threshold
+#
+# The exceedance probability shown in the dashboard refers to `alert_level`.
+# Values can be changed here without retraining the model: probabilities are
+# derived from the full predictive distribution, not from a fixed classifier.
+# ---------------------------------------------------------------------------
+units: cm
+alert_level: critical
+
+defaults:
+  street:
+    elevated: 10
+    dangerous: 20
+    critical: 30
+  metro:
+    elevated: 10
+    dangerous: 20
+    critical: 30
+
+# Per-sensor overrides, e.g.:
+# overrides:
+#   MET-03: {elevated: 8, dangerous: 15, critical: 25}
+overrides: {}

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flood Risk Monitor</title>
+  <link rel="icon" href="/static/assets/logo.svg">
+  <link rel="stylesheet" href="/static/vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img id="logo" class="logo" src="/static/assets/logo.svg" alt="logo">
+    <div class="brand-text">
+      <div class="title" id="app-title">Flood Risk Monitor</div>
+      <div class="subtitle" id="app-subtitle">Barcelona</div>
+    </div>
+  </div>
+  <div class="mode-block">
+    <span id="mode-pill" class="pill pill-live">LIVE</span>
+    <div class="issue">
+      <div class="issue-label">Forecast issued</div>
+      <div class="issue-time" id="issue-time">–</div>
+    </div>
+  </div>
+  <div class="top-right">
+    <span class="badge badge-sim" title="No real water-level sensors are connected yet. All sensor values are simulated from real rainfall.">SIMULATED SENSOR DATA</span>
+    <button class="badge badge-status" id="btn-sources" title="Data sources and freshness"><span class="dot" id="wx-dot"></span><span id="wx-label">Weather</span></button>
+    <button class="tbtn" id="btn-model">Model performance</button>
+    <button class="tbtn icon" id="btn-theme" title="Toggle dark mode">◐</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <section class="card">
+      <div class="card-title">Network risk at <span id="sum-horizon">now</span></div>
+      <div class="risk-tiles" id="risk-tiles"></div>
+      <div class="hint" id="sum-hint"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">Forecast mode</div>
+      <div class="seg-ctl" id="mode-ctl">
+        <button data-mode="live" class="active">Live</button>
+        <button data-mode="replay">Replay past event</button>
+      </div>
+      <select id="event-select" class="select hidden"></select>
+      <div class="hint" id="mode-hint">Latest data and the most recent weather forecast run.</div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">Map value</div>
+      <select id="metric-select" class="select">
+        <option value="level">Expected level at selected time</option>
+        <option value="max">Maximum level within window</option>
+        <option value="upper">Worst case (95 % upper bound)</option>
+      </select>
+      <div class="card-title mt">Monitored infrastructure</div>
+      <div class="chips" id="infra-chips">
+        <label class="chip"><input type="checkbox" value="metro" checked> Metro sections</label>
+        <label class="chip"><input type="checkbox" value="street" checked> Street sections</label>
+      </div>
+      <div class="card-title mt">Risk categories</div>
+      <div class="chips" id="risk-chips"></div>
+      <div class="card-title mt">Transport layers</div>
+      <div class="chips" id="layer-chips">
+        <label class="chip"><input type="checkbox" value="metro" checked> Metro network</label>
+        <label class="chip"><input type="checkbox" value="bus" checked> Bus routes</label>
+        <label class="chip"><input type="checkbox" value="stops"> Bus stops</label>
+        <label class="chip"><input type="checkbox" value="vehicles" checked> Vehicles (simulated)</label>
+      </div>
+      <div class="card-title mt">Weather layer</div>
+      <select id="weather-select" class="select">
+        <option value="">Off</option>
+        <option value="precipitation">Rainfall intensity (mm/h)</option>
+        <option value="acc">Accumulated rainfall in window (mm)</option>
+        <option value="temperature_2m">Temperature (°C)</option>
+        <option value="wind_speed_10m">Wind speed (km/h)</option>
+        <option value="relative_humidity_2m">Relative humidity (%)</option>
+      </select>
+      <div class="hint" id="weather-hint"></div>
+    </section>
+
+    <section class="card grow">
+      <div class="card-title">Locations by flood probability</div>
+      <div id="alert-list" class="alert-list"></div>
+    </section>
+  </aside>
+
+  <main class="map-wrap">
+    <div id="map"></div>
+    <div class="legend" id="legend"></div>
+    <div class="timebar">
+      <button id="btn-play" class="play" title="Animate forecast">▶</button>
+      <div class="slider-wrap">
+        <input type="range" id="slider" min="0" max="8" step="1" value="0">
+        <div class="ticks" id="ticks"></div>
+        <div class="tier-bar"><span class="tier op">Operational forecast (≤ 24 h)</span><span class="tier aw">Awareness · low confidence</span></div>
+      </div>
+      <div class="valid">
+        <div class="valid-label">Valid time</div>
+        <div class="valid-time" id="valid-time">–</div>
+        <div class="valid-tier" id="valid-tier"></div>
+      </div>
+    </div>
+    <div class="loading hidden" id="loading">Computing forecast…</div>
+    <div class="toast hidden" id="toast"></div>
+  </main>
+
+  <aside class="drawer" id="drawer">
+    <div class="drawer-inner" id="drawer-inner"></div>
+  </aside>
+</div>
+
+<div class="modal hidden" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<footer class="disclaimer">
+  Decision-support prototype · predictions are probabilistic and never guaranteed · operational decisions remain with authorised TMB personnel ·
+  Map data © OpenStreetMap contributors · Basemap © OpenFreeMap / OpenMapTiles · Weather: Open-Meteo (CC BY 4.0)
+</footer>
+
+<script src="/static/vendor/maplibre-gl.js"></script>
+<script src="/static/vendor/plotly-basic.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

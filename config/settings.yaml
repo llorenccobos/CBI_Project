@@ -1,0 +1,119 @@
+# ---------------------------------------------------------------------------
+# Barcelona Urban Flood Prediction & Transport Monitoring Platform
+# Main configuration. Secrets (API keys) go in the .env file, never here.
+# ---------------------------------------------------------------------------
+project:
+  name: "Flood Risk Monitor"
+  subtitle: "Xarxa TMB · Barcelona"
+  timezone: "Europe/Madrid"
+
+branding:
+  # Replace this file (SVG or PNG) to change the logo shown in the top bar.
+  logo_path: "assets/logo.svg"
+  primary_color: "#D50032"      # header accent
+
+area:
+  name: "Barcelona"
+  center: [2.165, 41.395]       # lon, lat
+  bbox: [2.052, 41.317, 2.228, 41.469]  # lon_min, lat_min, lon_max, lat_max
+  crs_metric: "EPSG:25831"      # ETRS89 / UTM 31N, official CRS in Catalonia
+
+weather:
+  # Gridded weather zones: each monitored sensor is linked to its nearest cell,
+  # and to an "upstream" cell (towards Collserola, NW) for runoff arriving from uphill.
+  grid:
+    lon_min: 2.075
+    lon_max: 2.215
+    lat_min: 41.350
+    lat_max: 41.450
+    n_lon: 5
+    n_lat: 4
+  history_start: "2022-01-01"
+  hourly_variables:
+    - precipitation
+    - temperature_2m
+    - relative_humidity_2m
+    - surface_pressure
+    - wind_speed_10m
+    - wind_direction_10m
+    - wind_gusts_10m
+    - cape
+  forecast_days: 4             # 72 h horizon + margin
+  open_meteo:
+    forecast_url: "https://api.open-meteo.com/v1/forecast"
+    historical_forecast_url: "https://historical-forecast-api.open-meteo.com/v1/forecast"
+    previous_runs_url: "https://previous-runs-api.open-meteo.com/v1/forecast"
+    elevation_url: "https://api.open-meteo.com/v1/elevation"
+    model: "best_match"        # AROME 1.3 km over Catalonia for the first ~2 days, ECMWF/ICON beyond
+    max_retries: 4
+    retry_wait_s: 20
+  meteocat:
+    base_url: "https://api.meteo.cat/xema/v1"
+    # XEMA stations inside Barcelona (used when METEOCAT_API_KEY is configured)
+    stations: ["X4", "X8", "D5"]
+  aemet:
+    base_url: "https://opendata.aemet.es/opendata/api"
+    stations: ["0076", "0201D"]
+
+transport:
+  overpass_endpoints:
+    - "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+    - "https://overpass-api.de/api/interpreter"
+    - "https://overpass.kumi.systems/api/interpreter"
+  # Metro lines operated by TMB (L6, L7, L8, L12 are FGC and are not included)
+  tmb_metro_lines: ["L1", "L2", "L3", "L4", "L5", "L9N", "L9S", "L10N", "L10S", "L11"]
+  bus_operator: "Transports Metropolitans de Barcelona"
+  simplify_tolerance_m: 6      # geometry simplification ("low resolution" for a fluid map)
+  bus_buffer_m: 25             # a bus route is linked to a street segment if it runs within this distance
+  bus_overlap_min: 0.4         # ... along at least this fraction of the segment length
+  street_segment_half_length_m: 160
+  tmb_gtfs_url: "https://api.tmb.cat/v1/static/datasets/gtfs.zip"
+
+vehicles:
+  metro_speed_kmh: 32          # commercial speed incl. dwell times
+  bus_speed_kmh: 12
+  metro_trains_per_line: 4
+  buses_per_route: 2
+  max_bus_routes: 24
+
+sensors:
+  frequency: "1h"
+  unit: "cm"
+  synthetic_seed: 20241029
+
+forecast:
+  horizons_h: [1, 2, 3, 6, 12, 24, 48, 72]
+  operational_max_h: 24        # beyond this: "awareness" (low confidence) tier
+  quantiles: [0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.98]
+  interval: [0.05, 0.95]       # displayed 90 % prediction interval
+  history_hours_panel: 96      # hours of measured history in the detail chart
+
+model:
+  # Chronological split (a 72 h gap is left between blocks to avoid leakage)
+  train_end: "2024-12-31"
+  val_end: "2025-06-30"
+  cal_end: "2025-12-31"
+  gap_hours: 72
+  dry_keep_fraction: 0.05      # down-sampling of dry, uneventful rows (re-weighted)
+  target_recall: 0.90          # alarm threshold tuned to keep missed floods <= 10 %
+  lightgbm:
+    n_estimators: 400
+    learning_rate: 0.08
+    num_leaves: 31
+    min_child_samples: 60
+    max_bin: 63
+    subsample: 0.7
+    subsample_freq: 1
+    colsample_bytree: 0.7
+    reg_lambda: 1.0
+
+storage:
+  url: "sqlite:///data/flood.db"
+
+api:
+  host: "127.0.0.1"
+  port: 8050
+
+scheduler:
+  enabled: true
+  update_minutes: 60           # weather refresh + sensor update + new forecast

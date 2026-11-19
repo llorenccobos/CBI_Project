@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------
+# Monitored locations (initial set, to be validated with TMB operations).
+#
+# Selection criteria (prototype): topographic low points of the Eixample/
+# Ciutat Vella plain, sections near the coast, and streets that follow old
+# rieres (natural stream beds) draining Collserola towards the sea.
+#
+# `vulnerability` (low | medium | high) only drives the SYNTHETIC sensor
+# generator. When real sensors are connected, it is no longer used.
+#
+# Metro sections reference real stations as named in OpenStreetMap.
+# Street sections reference a real street name and an approximate point;
+# the segment geometry is snapped to the actual OSM street axis.
+# To add a sensor, append an entry with a unique id.
+# ---------------------------------------------------------------------------
+metro_sections:
+  - {id: MET-01, line: L1, from: "Hostafrancs", to: "Espanya", vulnerability: high,
+     note: "Plaça d'Espanya basin, receives runoff from Montjuïc"}
+  - {id: MET-02, line: L1, from: "Marina", to: "Glòries", vulnerability: medium,
+     note: "Low-lying Glòries area"}
+  - {id: MET-03, line: L3, from: "Paral·lel", to: "La Rambla | Drassanes", vulnerability: high,
+     note: "Lowest point of the Paral·lel axis near the port"}
+  - {id: MET-04, line: L3, from: "La Rambla | Drassanes", to: "Liceu", vulnerability: medium,
+     note: "La Rambla follows an old riera"}
+  - {id: MET-05, line: L2, from: "Sant Antoni", to: "Universitat", vulnerability: low}
+  - {id: MET-06, line: L4, from: "Ciutadella | Vila Olímpica", to: "Bogatell", vulnerability: high,
+     note: "Coastal flat area, shallow water table"}
+  - {id: MET-07, line: L4, from: "Selva de Mar", to: "El Maresme | Fòrum", vulnerability: medium,
+     note: "Coastal Poblenou / Fòrum area"}
+  - {id: MET-08, line: L5, from: "Plaça de Sants", to: "Sants Estació", vulnerability: low}
+  - {id: MET-09, line: L5, from: "Verdaguer", to: "Sagrada Família", vulnerability: low}
+  - {id: MET-10, line: L2, from: "Encants", to: "El Clot", vulnerability: medium}
+  - {id: MET-11, line: L1, from: "Arc de Triomf", to: "Marina", vulnerability: medium}
+
+street_sections:
+  - {id: STR-01, street: "Gran Via de les Corts Catalanes", point: [2.1462, 41.3745], vulnerability: high,
+     note: "Gran Via descending into Plaça d'Espanya"}
+  - {id: STR-02, street: "Avinguda del Paral·lel", point: [2.1690, 41.3740], vulnerability: high}
+  - {id: STR-03, street: "Avinguda Meridiana", point: [2.1880, 41.4072], vulnerability: medium}
+  - {id: STR-04, street: "Rambla de Prim", point: [2.2055, 41.4160], vulnerability: medium,
+     note: "Follows the former Riera de Horta"}
+  - {id: STR-05, street: "Via Augusta", point: [2.1505, 41.3985], vulnerability: low}
+  - {id: STR-06, street: "Passeig de la Zona Franca", point: [2.1385, 41.3600], vulnerability: medium}
+  - {id: STR-07, street: "Passeig de Colom", point: [2.1795, 41.3775], vulnerability: high,
+     note: "Waterfront, final outlet of the city centre drainage"}
+  - {id: STR-08, street: "Carrer de Balmes", point: [2.1550, 41.3950], vulnerability: low}
+  - {id: STR-09, street: "Carrer de Sants", point: [2.1350, 41.3755], vulnerability: medium}
+  - {id: STR-10, street: "Carrer Gran de Sant Andreu", point: [2.1895, 41.4345], vulnerability: low}
+  - {id: STR-11, street: "Avinguda Diagonal", point: [2.2135, 41.4095], vulnerability: medium}
+  - {id: STR-12, street: "Carrer de Pujades", point: [2.1980, 41.4000], vulnerability: low}
