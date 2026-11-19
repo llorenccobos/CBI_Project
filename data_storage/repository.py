@@ -57,7 +57,9 @@ def latest_forecast_run() -> tuple[pd.Timestamp | None, pd.DataFrame]:
     if last.empty or last.t.iloc[0] is None:
         return None, pd.DataFrame()
     t = pd.Timestamp(last.t.iloc[0])
-    df = read_sql("SELECT * FROM weather_forecast WHERE issued_at = :t", t=t.to_pydatetime())
+    # range match: robust to how the DB driver serialises datetimes
+    df = read_sql("SELECT * FROM weather_forecast WHERE issued_at >= :a AND issued_at < :b",
+                  a=(t - pd.Timedelta(seconds=1)).to_pydatetime(), b=(t + pd.Timedelta(seconds=1)).to_pydatetime())
     df["ts"] = pd.to_datetime(df["ts"])
     return t, df
 

@@ -182,7 +182,21 @@ Add a location by appending an entry and running `python main.py network && pyth
 3. Stop running `sensors` (or remove the synthetic rows), then `python main.py train && python main.py evaluate`.
 4. Migrate storage to PostgreSQL/PostGIS by changing `storage.url` (SQLAlchemy Core is used throughout).
 
-## 7. Known limitations
+## 7. Current results (synthetic sensors, test period 2026-01 → 2026-11, out-of-sample)
+
+Full report: `reports/model_report.md` (also in the dashboard under *Model performance*).
+
+* Median-level error beats persistence from +2 h onwards (wet-hours MAE at +6 h: 1.05 cm vs 1.59 cm; at +24 h: 1.29 vs 2.87).
+* 90 % intervals cover 89–90 % of all hours (85–88 % in wet hours: slightly over-confident during storms).
+* Exceedance of 30 cm (window maximum): recall 0.88–0.96 with precision 0.72 (+1 h) down to 0.33 (+72 h);
+  57–62 of 65 flood onsets detected depending on lead time.
+* **Weaknesses found:** the median under-estimates flood *peaks* (window-max error ≈ 8.5 cm on eventful windows;
+  persistence is better at +1–3 h), because the quantile median is pulled towards the many dry hours. Probabilities
+  and alarms compensate, but peak magnitude should be read from the upper bound. Random Forest had lower wet-hour MAE
+  at 1–6 h in the learner comparison; LightGBM is kept for native quantile regression, speed and attributions.
+  Spatial features gave no measurable gain on synthetic data (expected: the simulator has no inter-sensor coupling).
+
+## 8. Known limitations
 
 * Synthetic sensors: model metrics demonstrate the pipeline, not real-world skill.
 * Weather grid ≈ 3 km and hourly; convective cells are smaller and faster → radar nowcasting is the main upgrade path.
